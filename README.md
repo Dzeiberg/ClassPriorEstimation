@@ -17,6 +17,8 @@ cd ClassPriorEstimation
 pip install -r requirements.txt
 ```
 
+[Download Model](https://drive.google.com/open?id=1C3-11IXNyB9k7pA-ix1n14tfbeO_oy3N)
+
 ## Generate Training Data
 An example call to generate training data
 ```
@@ -43,6 +45,12 @@ python processDataset.py --sample_directory data_directory --distance_metric euc
 ```
 The set of supported distance metrics to be used when constructing the distance curve is: {euclidian, city block, yang(p=1), yang(p=2)}
 
+
+## Estimate Class Prior
+To estimate the class prior from a given dataset run
+```
+python estimate.py --model_path model.hdf5 --features_path features.npy --labels_path labels.npy --out_file out.txt
+``` 
 
 ## Authors
 
