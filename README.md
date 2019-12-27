@@ -54,7 +54,7 @@ python estimate.py --model_path model.hdf5 --features_path features.npy --labels
 
 ## Authors
 
-* [**Daniel Zeiberg**](dzeiberg.github.io)
+* [**Daniel Zeiberg**](https://dzeiberg.github.io)
 
 See also the list of [contributors](https://github.ccs.neu.edu/dzeiberg/ClassPriorEstimation/graphs/contributors) who participated in this project.
 
