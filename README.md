@@ -2,6 +2,8 @@
 
 An intuitive and fast nonparametric algorithm to estimate class proportions
 
+[Updated Paper](./ClassPriorEstimationAAAI.pdf)
+
 ## Installing
 
 Clone repository
