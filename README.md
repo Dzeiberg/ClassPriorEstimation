@@ -43,7 +43,7 @@ where x<sub>i</sub> represents a sample and s<sub>i</sub> represents the positiv
 the directory of datasets can be processed by calling:
 
 ```
-python processDataset.py --sample_directory data_directory --distance_metric euclidian --number_curves_to_average 10
+python dataProcessing/processDataset.py --sample_directory data_directory --distance_metric euclidian --number_curves_to_average 10
 ```
 The set of supported distance metrics to be used when constructing the distance curve is: {euclidian, city block, yang(p=1), yang(p=2)}
 
