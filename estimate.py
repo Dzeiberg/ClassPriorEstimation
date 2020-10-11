@@ -40,9 +40,9 @@ def main():
     model.summary(print_fn=lambda x: print(x,file=f))
     features = np.load(args.features_path)
     predictions = model.predict(features)
-    if args.labels_path:
-        labels = np.load(args.labels_path)
-        mae = np.mean(np.abs(labels - predictions))
+    if args.true_values_path:
+        true = np.load(args.true_values_path)
+        mae = np.mean(np.abs(true - predictions))
         print("MAE: {}\n".format(mae), file=f)
     print("Predictions:",file=f)
     for prediction in predictions:
@@ -53,7 +53,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--model_path", type=str, help="path to model weights")
     parser.add_argument("--features_path", type=str, help="path to dataset feature")
-    parser.add_argument("--labels_path", type=str, help="optional: path to dataset labels")
+    parser.add_argument("--true_values_path", type=str, help="optional: path to numpy array containing the \
+        true class prior for each dataset")
     parser.add_argument("--out_file", type=str, help="path to output file", default="")
     args = parser.parse_args()
     main()

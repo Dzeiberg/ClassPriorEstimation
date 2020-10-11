@@ -70,12 +70,11 @@ def makeDistanceCurve(mixture_sample, component_sample):
     return distance_curve
 
 def main():
-    sample_files = glob.glob(args.sample_directory+"*")
-    if args.limit:
-        sample_files = sample_files[:args.limit]
+    sample_files = glob.glob(args.sample_directory+"*.json")
     random.shuffle(sample_files)
     features = xp.zeros((len(sample_files), 100))
-    labels = xp.zeros((len(sample_files), 1))
+    if args.create_true_values_vector:
+        labels = xp.zeros((len(sample_files), 1))
     for f_num, sample_path in enumerate(sample_files):
         print("sample {}/{}".format(f_num, len(sample_files)))
         with open(sample_path) as f:
@@ -86,9 +85,11 @@ def main():
         mixture_sample = sample["sample"][~sample["component_assignment"]].reshape((-1,1))
         curve = makeDistanceCurve(mixture_sample, component_sample)
         features[f_num,:] = curve
-        labels[f_num] = sample["class_prior"]
+        if args.create_true_values_vector:
+            labels[f_num] = sample["class_prior"]
     xp.save(os.path.join(args.sample_directory, "features.npy"), features)
-    xp.save(os.path.join(args.sample_directory, "labels.npy"), labels)
+    if args.create_true_values_vector:
+        xp.save(os.path.join(args.sample_directory, "labels.npy"), labels)
 
 
 if __name__ == '__main__':
@@ -100,6 +101,9 @@ if __name__ == '__main__':
     parser.add_argument("--number_curves_to_average", type=int,
         help="specify the number of curves to average over when constructing distance curve", default=10)
     parser.add_argument("--n_jobs", type=int, default=2, help="number of jobs to run when computing curves to average over")
-    parser.add_argument("--limit",default=0,type=int)
+    parser.add_argument("--create_true_values_vector", action="store_true", default=False,
+        help="set create_true_values_vector flag to true if you wish to evaluate the model's performance\
+         on a dataset with a known class prior. \
+         This creates a file labels.py that will be used in the estimate script to evaluate the model's performance.")
     args = parser.parse_args()
     main()
