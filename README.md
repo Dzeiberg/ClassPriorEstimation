@@ -9,7 +9,7 @@ An intuitive and fast nonparametric algorithm to estimate class proportions
 Clone repository
 
 ```
-git clone git@github.ccs.neu.edu:dzeiberg/ClassPriorEstimation.git
+git clone git@github.com:Dzeiberg/ClassPriorEstimation.git
 ```
 
 Install dependencies
