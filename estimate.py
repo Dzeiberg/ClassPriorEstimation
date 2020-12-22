@@ -2,12 +2,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 import os
-from keras.models import load_model
+import tensorflow as tf
+from tensorflow.keras.models import load_model
 import numpy as np
 import argparse
-from keras.layers import Input, Dense, Dropout, Activation, ReLU
-from keras.layers.normalization import BatchNormalization
-from keras.models import Model, Sequential
+from tensorflow.keras.layers import Input, Dense, Dropout, Activation, ReLU, BatchNormalization
+from tensorflow.keras.models import Model, Sequential
 
 def getModel():
     inputs = Input(shape=(100,), name='network_input')

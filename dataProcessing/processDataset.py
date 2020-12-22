@@ -13,10 +13,9 @@ from yangDistance import yangVectorDistance
 from multiprocessing import Pool
 import random
 
-def get_min_distance(mixture_sample, component_choice):
+def get_min_distance(mixture_sample, component_choice, metric="euclidian"):
     component_vector = np.repeat(component_choice, mixture_sample.shape[0],axis=0)
     #print(mixture_sample.shape, component_vector.shape)
-    metric = args.distance_metric
     if metric == "euclidian":
         #distances = np.sqrt(np.sum((mixture_sample - component_vector)**2, axis=1)).flatten()
         distances = np.linalg.norm(mixture_sample - component_vector, axis=1,ord=2)
@@ -34,12 +33,12 @@ def get_min_distance(mixture_sample, component_choice):
     min_distance = distances[min_index]
     return min_distance, min_index
 
-def single(mixture_sample, component_sample):
+def single(mixture_sample, component_sample, metric="euclidian", quiet=True):
         distances = np.zeros((1, mixture_sample.shape[0]))
         mixture_remaining_mask = np.ones_like(mixture_sample).astype(bool)
         while mixture_remaining_mask.any():
             iternum = len(mixture_remaining_mask) - mixture_remaining_mask.sum()
-            if not iternum % 1000:
+            if not quiet and not iternum % 1000:
                 print("\t{}/{}".format(iternum, len(mixture_remaining_mask)))
             # randomly sample component instance
             component_choice = component_sample[np.random.choice(range(component_sample.shape[0]), 1)].reshape((1,-1))
@@ -47,7 +46,7 @@ def single(mixture_sample, component_sample):
             remaining_mixture_samples = mixture_sample[mixture_remaining_mask]
             if len(remaining_mixture_samples.shape) == 1:
                 remaining_mixture_samples = np.expand_dims(remaining_mixture_samples, 1)
-            distance, remaining_mixture_index = get_min_distance(remaining_mixture_samples, component_choice)
+            distance, remaining_mixture_index = get_min_distance(remaining_mixture_samples, component_choice, metric=metric)
             distances[0, len(mixture_sample) - mixture_remaining_mask.sum()] = distance
             # Remove mixture sample from above 
             remaining_indices,_ = np.nonzero(mixture_remaining_mask)
@@ -55,10 +54,13 @@ def single(mixture_sample, component_sample):
             mixture_remaining_mask[index_of_closest] = False
         return distances
 
-def makeDistanceCurve(mixture_sample, component_sample):
-    p = Pool(processes=args.n_jobs)
-    distanceVectors = p.starmap(single,[(mixture_sample, component_sample) for _ in range(args.number_curves_to_average)])
-    p.close()
+def makeDistanceCurve(mixture_sample, component_sample, jobs=2, num_curves_to_average=10, metric="euclidian"):
+    if jobs == 1:
+        distanceVectors = [single(mixture_sample, component_sample, metric) for _  in  range(num_curves_to_average)]
+    else:
+        p = Pool(processes=jobs)
+        distanceVectors = p.starmap(single,[(mixture_sample, component_sample,metric) for _ in range(num_curves_to_average)])
+        p.close()
     distances = np.concatenate(distanceVectors,0)
     # Average over the curves
     smoothed_distances = np.mean(distances, axis=0)
@@ -83,7 +85,7 @@ def main():
             sample["component_assignment"] = np.array(sample["component_assignment"]).astype(bool)
         component_sample = sample["sample"][sample["component_assignment"]].reshape((-1,1))
         mixture_sample = sample["sample"][~sample["component_assignment"]].reshape((-1,1))
-        curve = makeDistanceCurve(mixture_sample, component_sample)
+        curve = makeDistanceCurve(mixture_sample, component_sample, jobs=args.n_jobs, num_curves_to_average=args.number_curves_to_average, metric=args.distance_metric)
         features[f_num,:] = curve
         if args.create_true_values_vector:
             labels[f_num] = sample["class_prior"]
