@@ -4,6 +4,10 @@ An intuitive and fast nonparametric algorithm to estimate class proportions
 
 [Updated Paper](./ClassPriorEstimationAAAI.pdf)
 
+## Updated Repository
+
+An updated version of the method can be found [here](https://github.com/Dzeiberg/dist_curve)
+
 ## Installing
 
 Clone repository
